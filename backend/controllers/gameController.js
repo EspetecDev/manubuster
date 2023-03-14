@@ -1,11 +1,8 @@
 const asyncHandler = require('express-async-handler');
-
 const Game = require('../models/gameModel');
-
-const asyncHandler = require('express-async-handler');
-
-const Game = require('../models/gameModel');
+const User = require('../models/userModel');
 const { set } = require('mongoose');
+
 // @desc Get all games
 // @route GET /api/games
 // @access Public
@@ -26,8 +23,12 @@ const setGame = asyncHandler(async (req, res) => {
         throw new Error('Please add at lest a name, a platorm and a owner');
     }
 
-    const Game = await Game.create({
+    const owner = User.find
 
+    const Game = await Game.create({
+        name: req.body.name,
+        platform: req.body.platform,
+        owner: req.body.
     })
 
     const goal = await Goal.create({
