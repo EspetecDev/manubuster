@@ -1,15 +1,38 @@
 const asyncHandler = require('express-async-handler');
 const Game = require('../models/gameModel');
 const User = require('../models/userModel');
+const axios = require('axios');
 const { set } = require('mongoose');
+
+async function GetImageByGame(gameName) {
+    try {
+        const image = await axios.get('https://i.imgur.com/VMUUoOU.jpeg');
+        return image.status == 200 ? image.data : undefined;
+    } catch (e) {
+        console.log(e);
+    }
+}
 
 // @desc Get all games
 // @route GET /api/games
 // @access Public
 const getGames = asyncHandler(async (req, res) => {
     // get all games
-    const goals = await Game.find();
-    // const userGoals = await Goal.find({user: req.user.id })
+    const games = await Game.find();
+    res.status(200).json({games});
+});
+
+// @desc Get user reserved games
+// @route GET /api/games
+// @access Public
+const getUserGames = asyncHandler(async (req, res) => {
+    // get all games
+    if(!req.user.id)
+    {
+        res.status(400);
+        throw new Error('userId required');
+    }
+    const goals = await Goal.find({owner: req.user.id })
     res.status(200).json({userGoals});
 });
 
@@ -20,22 +43,18 @@ const setGame = asyncHandler(async (req, res) => {
     // need at least: name, platform, owner
     if(!req.body.name || !req.body.platform || !req.body.owner ){
         res.status(400);
-        throw new Error('Please add at lest a name, a platorm and a owner');
+        throw new Error('Please add at least a name, a platorm and a owner');
     }
 
-    const owner = User.find
-
-    const Game = await Game.create({
+    const owner = await User.find({name: req.body.owner});
+    const cover = await GetImageByGame(req.body.name);
+    const game = await Game.create({
         name: req.body.name,
         platform: req.body.platform,
-        owner: req.body.
-    })
-
-    const goal = await Goal.create({
-        text: req.body.text,
-        user: req.user.id
+        owner: owner.id
     });
-    res.status(200).json(goal);
+
+    res.status(200).json(game);
 });
 
 // @desc Update goals
@@ -88,9 +107,10 @@ const deleteGame = asyncHandler(async (req, res) => {
     res.status(200).json({message:`delete goal ${req.params.id}`});
 });
 
-module.exports = [
+module.exports = {
     getGames,
+    getUserGames,
     setGame,
     updateGame,
     deleteGame
-]
+}

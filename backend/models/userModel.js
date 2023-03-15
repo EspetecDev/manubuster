@@ -15,8 +15,8 @@ const userSchema = mongoose.Schema({
         require: [true, 'Please add a password']
     },
     avatar: {
-        type: Image,
-        require: [false]
+        data: Buffer,
+        contentType: String
     }
 },
 {
