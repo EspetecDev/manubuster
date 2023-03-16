@@ -7,17 +7,11 @@ const gameSchema = mongoose.Schema({
     },
     platform: {
         type: String, 
-        require: [true, 'Please add platform'],
-        unique: true
+        require: [true, 'Please add platform']
     },
     owner : {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        require: [true, 'Please add owner']
-    },
-    cover: {
-        data: Buffer,
-        contentType: String
     },
     lentTo: {
         type: mongoose.Schema.Types.ObjectId,

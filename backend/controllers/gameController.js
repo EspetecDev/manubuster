@@ -3,6 +3,7 @@ const Game = require('../models/gameModel');
 const User = require('../models/userModel');
 const axios = require('axios');
 const { set } = require('mongoose');
+const {allowedPlatforms} = require('../config/constants');
 
 async function GetImageByGame(gameName) {
     try {
@@ -26,14 +27,13 @@ const getGames = asyncHandler(async (req, res) => {
 // @route GET /api/games
 // @access Public
 const getUserGames = asyncHandler(async (req, res) => {
-    // get all games
-    if(!req.user.id)
-    {
-        res.status(400);
-        throw new Error('userId required');
-    }
-    const goals = await Goal.find({owner: req.user.id })
-    res.status(200).json({userGoals});
+    const userGames = await Game.find({owner: req.user.id })
+    res.status(200).json({userGames});
+});
+
+const getReservedGames = asyncHandler(async (req, res) => {
+    const reservedGames = await Game.find({lentTo: req.user.id })
+    res.status(200).json({reservedGames});
 });
 
 // @desc Set game
@@ -45,66 +45,142 @@ const setGame = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error('Please add at least a name, a platorm and a owner');
     }
-
+    if( allowedPlatforms.indexOf(req.body.platform) <= -1 ){
+        res.status(400);
+        throw new Error(`Please add a valid platform: ${allowedPlatforms}`);
+    }
     const owner = await User.find({name: req.body.owner});
+    if(owner.length === 0){
+        res.status(400);
+        throw new Error(`Owner: ${req.body.owner} is not registered`);
+    }
+    // check if already exists
+    const game = await Game.find({
+        name: req.body.name,
+        owner: owner.id,
+        platform: req.body.platform
+    });
+    if(game.length !== 0){
+        res.status(400);
+        throw new Error(`Game already registered`);
+    }
     const cover = await GetImageByGame(req.body.name);
-    const game = await Game.create({
+    const newGame = await Game.create({
         name: req.body.name,
         platform: req.body.platform,
-        owner: owner.id
+        owner: owner[0].id
     });
-
-    res.status(200).json(game);
+    // newGame.owner = owner._id;
+    // await newGame.save();
+    res.status(200).json(newGame);
 });
 
-// @desc Update goals
-// @route PUT /api/goals/:id
+// @desc Update game
+// @route PUT /api/games/:id
 // @access Private
 const updateGame = asyncHandler(async (req, res) => {
-    const goal = await Goal.findById(req.params.id);
-    if(!goal){
+    const game = await Game.findById(req.params.id);
+    if(!game){
         res.status(400);
-        throw new Error('goal not found');
+        throw new Error(`game id ${req.params.id}  not found`);
     }
 
     const user = await User.findById(req.user.id)
     if(!user){
         res.status(401)
-        throw new Error('User not found');
+        throw new Error(`User id ${req.user.id} not found`);
     }
-    // make sure that the logged user matches the goal user
-    if(goal.user.toString() !== user.id){
+    // make sure that the logged user matches the game user
+    if(game.user.toString() !== user.id || !user.isAdmin){
         res.status(401)
         throw new Error('user not authorized');
     }
 
-    const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {new: true,});
-    res.status(200).json(updatedGoal);
+    const updatedGame = await Game.findByIdAndUpdate(req.params.id, req.body, {new: true,});
+    res.status(200).json(updatedGame);
 });
 
-// @desc Delete goal
-// @route DELETE /api/goals/:id
+// @desc Delete game
+// @route DELETE /api/games/:id
 // @access Private
 const deleteGame = asyncHandler(async (req, res) => {
-    const goal = await Goal.findById(req.params.id);
-    if(!goal){
+    const game = await Game.findById(req.params.id);
+    if(!game){
         res.status(400);
-        throw new Error('goal not found');
+        throw new Error(`game id ${req.params.id} not found`);
     }
 
     const user = await User.findById(req.user.id)
     if(!user){
         res.status(401)
-        throw new Error('User not found');
+        throw new Error(`User id ${req.user.id} not found`);
     }
     // make sure that the logged user matches the goal user
-    if(goal.user.toString() !== user.id){
+    if(game.owner.toString() !== user.id || !user.isAdmin){
         res.status(401)
         throw new Error('user not authorized');
     }
     
-    const deletedGoal = await Goal.findByIdAndDelete(req.params.id);
+    const deletedGame = await Game.findByIdAndDelete(req.params.id);
     res.status(200).json({message:`delete goal ${req.params.id}`});
+});
+
+const reserveGame = asyncHandler(async(req, res) => {
+    const game = await Game.findById(req.body.gameId);
+    if(!game){
+        res.status(400);
+        throw new Error(`game id ${req.body.gameId} not found`);
+    }
+    // check if the game is already reserved
+    if(game.reservedDate){
+        res.status(401);
+        throw new Error('game already reserved');
+    }
+    const user = await User.findById(req.user.id)
+    if(!user){
+        res.status(401);
+        throw new Error(`User id ${req.user.id} not found`);
+    }
+    
+    const newParams = {
+        lentTo: user._id,
+        reservedDate: Date.now()
+    }
+    const updatedGame = await Game.findByIdAndUpdate(req.body.gameId, newParams, {new: true,});
+    res.status(200).json({message:`reserved game ${updatedGame}`});
+});
+
+const returnGame = asyncHandler(async(req, res) => {
+    const game = await Game.findById(req.body.gameId);
+    if(!game){
+        res.status(400);
+        throw new Error(`game id ${req.body.gameId} not found`);
+    }
+    // check if the game is already reserved
+    if(!game.reservedDate){
+        res.status(401);
+        throw new Error('game not reserved');
+    }
+    const user = await User.findById(req.user.id)
+    if(!user){
+        res.status(401);
+        throw new Error(`User id ${req.user.id} not found`);
+    }
+
+    if(user._id.toString() !== game.lentTo.toString() && !user.isAdmin){
+        res.status(401);
+        throw new Error(`this user can't undo the reserve`);
+    }
+
+    game.lentTo = undefined;
+    game.reservedDate = undefined;
+    await game.save();
+    // const newParams = {
+    //     lentTo: "",
+    //     reservedDate: undefined
+    // }
+    // const updatedGame = await Game.findByIdAndUpdate(req.body.gameId, {$unset: "lentTo", $unset: "reservedDate"}, {new: true,});
+    res.status(200).json({message:`returned game ${game}`});
 });
 
 module.exports = {
@@ -112,5 +188,8 @@ module.exports = {
     getUserGames,
     setGame,
     updateGame,
-    deleteGame
+    deleteGame,
+    reserveGame,
+    returnGame,
+    getReservedGames
 }
