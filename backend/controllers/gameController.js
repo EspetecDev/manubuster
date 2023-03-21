@@ -9,8 +9,8 @@ const {allowedPlatforms} = require('../config/constants');
 const baseURI = 'https://api.igdb.com/v4';
 const headers = {
     'Accept': 'application/json',
-    'Client-ID': '956nqfewwdj2i6rf22or9bw4xu2j83',
-    'Authorization': 'Bearer wvum0vz0zxked4md4tkn0rlaefjv4m',
+    'Client-ID': process.env.IGDB_CLIENTID,
+    'Authorization': process.env.IGDB_TOKEN,
 };
 
 async function GetImageByGame(gameName) {
