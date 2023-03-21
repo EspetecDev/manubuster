@@ -1,0 +1,8 @@
+.games{
+    margin: 2em 2em;
+}
+
+.gamesAutocomplete {
+    display: inline-flex;
+    color: blue;
+}

@@ -1,9 +1,11 @@
 const express = require('express');
+const cors = require('cors');
 const router = express.Router();
-const {getGames, getUserGames, setGame, updateGame, deleteGame, reserveGame, returnGame, getReservedGames} = require('../controllers/gameController');
+const {getGames, getUserGames, setGame, updateGame, deleteGame, reserveGame, returnGame, getReservedGames, getGameCover} = require('../controllers/gameController');
 const {protect} = require('../middleware/authMiddleware');
 
-router.route('/').get(getGames).post(protect, setGame);
-router.route('/userGames').get(protect, getUserGames).put(protect, updateGame).delete(protect, deleteGame);
-router.route('/reserve').get(protect, getReservedGames).put(protect, returnGame).post(protect, reserveGame);
+router.route('/').get(cors(), getGames);
+router.route('/userGames').get(cors(), protect, getUserGames).post(cors(), protect, setGame).put(cors(), protect, updateGame).delete(cors(), protect, deleteGame);
+router.route('/reserve').get(cors(), protect, getReservedGames).put(cors(), protect, returnGame).post(cors(), protect, reserveGame);
+router.route('/cover').get(cors(), getGameCover);
 module.exports = router

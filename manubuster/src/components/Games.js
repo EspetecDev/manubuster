@@ -1,49 +1,57 @@
+import '../style/Games.css';
 import GameCard from "./GameCard";
-import Grid from '@mui/material/Grid'; // Grid version 1
+import Grid from "@mui/material/Unstable_Grid2";
 import { Autocomplete, TextField } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from 'axios';
+
 
 
 const Games = () => {
-    
-    const games = [
-        {name: "g1", img: "img", platform: "switch", owner: "manu", state: "lent", lentTo: "imae"},
-        {name: "g2", img: "img", platform: "ps5", owner: "manu", state: "lent", lentTo: "javie"},
-        {name: "g3", img: "img", platform: "switch", owner: "manu", state: "playing", lentTo: ""}
-    ];
-    const [value, setValue] = (games[0]);
+    const [games, setGames] = useState([]);
     const [inputValue, setInputValue] = useState('');
+    const gamesTest = [
+        {name: 'test1', owner:'owner1', platform:'platform1'},
+        {name: 'test2', owner:'owner2', platform:'platform2'},
+    ]
+
+    useEffect( () => {
+        axios.get('http://localhost:5000/api/games/')
+            .then( (res) => {
+                console.log('axios call');
+                setGames(res.data.games);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
     
     return (
-        <div className="Games">
+        <div className="gamesWidget">
+        <div className="gamesAutocomplete">
             <Autocomplete
                 id="gameListWidget"
                 options={games.sort((a, b) => -b.platform.localeCompare(a.platform))}
                 groupBy={(game) => game.platform}
                 getOptionLabel={(game) => game.name}
-                sx={{ width: 300 }}
-                renderInput={(params) => <TextField {...params} label="Search game..." />}
-                value={value}
-                onChange={(event, newValue) => {
-                    setValue(newValue);
-                }}
+                sx={{ width: 500 }}
+                renderInput={(params) => <TextField {...params} variant="standard" label="Search game..." />}
                 inputValue={inputValue}
                 onInputChange={(event, newInputValue) => {
                     setInputValue(newInputValue); 
                 }}
             />
-            <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                {Array.from(Array(games.length)).map((_, index) => (
-                    <Grid item xs={3} sm={4} md={4} key={index}>
-                    <GameCard gameName={games[index]}></GameCard>
-                    </Grid>
-                ))}
+        </div>
+
+        <div className="games">
+            <Grid container spacing={5}>
+            {games.filter((game) => { return inputValue ? game.name.includes(inputValue) : true}).map((_, index) => (
+                <Grid xs={8} sm={4} md={2} key={index}>
+                    <GameCard gameInfo={games[index]}></GameCard>
+                </Grid>
+            ))}      
             </Grid>
-            <button>a</button>
-            <div className="debug">
-                <h1>a</h1>
-            </div>
-            
+        </div>
         </div>
     );
 }

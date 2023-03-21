@@ -13,6 +13,12 @@ const gameSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
+    igdbID: {
+        type: Number
+    },
+    coverUrl: {
+        type: String
+    },
     lentTo: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
