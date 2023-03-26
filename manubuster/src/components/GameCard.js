@@ -11,7 +11,7 @@ import { useState, useEffect } from "react";
 import {yellowColor, blueColor} from '../helpers/consts';
 import { createTheme, ThemeProvider } from '@mui/material';
 
-const theme = createTheme({palette: { warning: {main: yellowColor}}});
+const theme = createTheme({palette: { warning: {main: yellowColor}, primary: {main: blueColor}}});
 
 const GameCard = (gameInfoParam) => {
     const gameInfo = gameInfoParam.gameInfo ?? '';

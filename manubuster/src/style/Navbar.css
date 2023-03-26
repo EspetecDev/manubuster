@@ -1,0 +1,15 @@
+@font-face {
+    font-family: MachineStd;
+    src: url('fonts/MachineStd.ttf') format('ttf');
+    font-weight: 300 800;
+    font-style: normal;
+}
+
+.class{
+    color: rgb(16,48,173);
+}
+
+.logo{
+    color: rgb(255,169,3);
+    /* font-family: MachineStd; */
+}

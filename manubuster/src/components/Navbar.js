@@ -1,190 +1,45 @@
-import * as React from 'react';
+import '../style/Navbar.css';
+import { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/material/Menu';
-import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import {yellowColor, blueColor} from '../helpers/consts';
-
-const pages = ['Games', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-const nologinBtns = ['Login', 'Signup'];
-
-const getUserLoginState = () => {
-  return false;
-};
+import { Box,Button } from '@mui/material';
+import { ThemeProvider } from '@mui/material';
+import { theme } from '../helpers/consts';
+import { Link } from 'react-router-dom';
+import GamepadIcon from '@mui/icons-material/Gamepad';
+import LoginIcon from '@mui/icons-material/Login';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import { UserContext } from './App';
 
 function Navbar() {
-  const [anchorElNav, setAnchorElNav] = React.useState(false);
-  const [anchorElUser, setAnchorElUser] = React.useState(false);
-
-  const onBtnPressed = (event) => {
-    console.log(event.currentTarget.innerText);
-    switch(event.currentTarget.innerText){
-      case 'games':   
-        console.log('games');
-        break;
-      default:
-        console.log('other');
-    }
-  };
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
-  return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}/>  */}
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: {yellowColor},
-              textDecoration: 'none',
-            }}
-          >
-            MANUBUSTER
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href=""
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            MB
-          </Typography>
-
-          
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
-          
-          <Box hidden={getUserLoginState()} sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {nologinBtns.map((page) => (
-              <Button
-                key={page}
-                onClick={onBtnPressed}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
-
-          {/* <Box hidden={!getUserLoginState()} sx={{ flexGrow: 0 }}>
-            <Tooltip title="Profile">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser) ?? false}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={onBtnPressed}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box> */}
-        </Toolbar>
-      </Container>
-    </AppBar>
-  );
+	const [isLoggedIn, setIsLoggedIn] = useState(UserContext.isLoggedIn ?? false);
+  	return (
+		<div className="a">
+		<ThemeProvider theme={theme}>
+			<AppBar position="static">
+			<Toolbar sx={{ justifyContent: 'space-between' }}>
+				<Box sx={{display: 'flex'}}>
+					<Typography variant="h6" className='logo'>
+					MANUBUSTER
+					</Typography>
+					<Link to='/'>
+					<Button variant='contained' startIcon={<GamepadIcon/>} sx={{marginLeft: "50px"}} color="warning">GAMES</Button>
+					</Link>
+				</Box>
+				<div hidden={isLoggedIn}>
+					<Link to='/login'>
+					<Button variant='contained' startIcon={<LoginIcon/>} className='btn' color="warning" >LOGIN</Button>
+					</Link>
+					<Link to='/signup'>
+					<Button variant='contained' startIcon={<AppRegistrationIcon/>} sx={{marginLeft: "25px"}} className='btn' color="warning" >REGISTER</Button>
+					</Link>
+				</div>
+			</Toolbar>
+			</AppBar>
+		</ThemeProvider>
+		</div>
+  	);
 }
 export default Navbar;
 
