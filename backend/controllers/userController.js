@@ -51,11 +51,11 @@ const registerUser = asyncHandler(async (req, res) => {
     const hashedPwd = await bcrypt.hash(password, salt);
 
     // Create user
-    // const user = await User.create({
-    //     name,
-    //     email,
-    //     password: hashedPwd,
-    // });
+    const user = await User.create({
+        name,
+        email,
+        password: hashedPwd,
+    });
 
     if(user){
         res.status(201).json({
@@ -87,15 +87,17 @@ const recoverPassword = asyncHandler(async(req, res) => {
         if(!user){
             res.status(400).json({reason: 'This email is not registered'});
             throw new Error('This email is not registered');
+            next();
         }
     
         const recoverToken = '';
-        const url = `${process.env.BACKEND_URI}/api/users/recoverPassword/${recoverToken}`;
+        const url = `${process.env.BACKEND_URI}/users/recoverPassword/${recoverToken}`;
         const name = user.name;
         sendRecoverPwdMail(url, name, email);
-        res.status(200).json({reason: 'Check your email for resetting your password'})
+        res.status(200).json({reason: 'Check your email for resetting your password', debug: url});
     } catch (error) {
         res.status(500).json({reason:'Internal error'});
+        throw new Error('Internal error');
     }
 });
 

@@ -2,6 +2,7 @@ import { createTheme } from '@mui/material';
 
 export const yellowColor = 'rgb(255,169,3)';
 export const blueColor = 'rgb(16,48,173)';
+export const sessionInfoConst = 'sessionInfo'
 
 export const theme = createTheme({
     palette: {

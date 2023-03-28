@@ -5,7 +5,6 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import getGameCover from '../helpers/externalCalls'
 import { CircularProgress } from '@mui/material';
 import { useState, useEffect } from "react";
 import {yellowColor, blueColor} from '../helpers/consts';

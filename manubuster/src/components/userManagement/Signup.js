@@ -135,11 +135,6 @@ export default function SignUp() {
                   Already have an account? Log In
                 </Link>
               </Grid>
-              <Grid item>
-                <Link to="/recoverPassword" >
-                  Forgot password?
-                </Link>
-              </Grid>
             </Grid>
           </Box>
         </Box>

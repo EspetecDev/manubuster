@@ -14,13 +14,17 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 import { CircularProgress } from '@mui/material';
-import { UserContext } from '../App';
+import { useNavigate } from 'react-router-dom';
+import {getSessionInfo, setSessionInfo} from '../../helpers/helpers';
 
 const theme = createTheme();
+
 
 export default function SignIn() {
   	const [showError, setShowError] = useState('');
   	const [loading, setLoading] = useState(false);
+    const [token, setToken] = useState(getSessionInfo().userToken ?? '');
+    const navigate = useNavigate();
 
   	const handleSubmit = (event) => {
         event.preventDefault();
@@ -37,10 +41,9 @@ export default function SignIn() {
                 email: data.get('email'),
                 password: data.get('password'),
             }}).then( (req, res) => {
-                UserContext.userToken = req.data.token;
-                UserContext.userLoggedIn = true;
+                setSessionInfo(req.data.token, data.get('email'));
                 setLoading(false);
-                console.log(UserContext);
+                navigate('/games');
             })
             .catch((err) => {
                 setShowError(err.response.data.message);
@@ -110,6 +113,13 @@ export default function SignIn() {
               <Grid item>
                 <Link to="/register" >
                   Not registered? Sign Up
+                </Link>
+              </Grid>
+            </Grid>
+            <Grid container justifyContent="flex-end">
+              <Grid item>
+                <Link to="/recoverPassword" >
+                  Forgot password?
                 </Link>
               </Grid>
             </Grid>
