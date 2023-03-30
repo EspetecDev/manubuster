@@ -1,4 +1,4 @@
-import '../style/GameCard.css';
+import '../../style/GameCard.css';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -7,14 +7,13 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { CircularProgress } from '@mui/material';
 import { useState, useEffect } from "react";
-import {yellowColor, blueColor} from '../helpers/consts';
+import {yellowColor, blueColor} from '../../helpers/consts';
 import { createTheme, ThemeProvider } from '@mui/material';
 
 const theme = createTheme({palette: { warning: {main: yellowColor}, primary: {main: blueColor}}});
 
 const GameCard = (gameInfoParam) => {
     const gameInfo = gameInfoParam.gameInfo ?? '';
-    // const [coverURL, setCoverURL] = useState('');
     const [coverLoaded, setCoverLoaded] = useState(false);
     const [reserveState, setReserveState] = useState('');
 
@@ -25,18 +24,7 @@ const GameCard = (gameInfoParam) => {
             coverURL = coverURL.concat('/', elem ? elem.startsWith('t_') ? imageSize : elem : '');
         });
     }
-    // const coverURL = gameInfo.coverUrl.replace('');
 
-    // useEffect( () => {
-    //     if(gameInfo.name){
-    //         getGameCover(gameInfo.name).
-    //         then( (url) => {
-    //              setCoverURL(url); 
-    //              setCoverLoaded(true);
-    //         }).
-    //         catch( (err) => { console.error(err); });
-    //     }
-    // }, []);
 
     return ( 
         <div className="zoom">

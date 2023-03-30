@@ -6,7 +6,9 @@ export const setSessionInfo = (newToken, newMail) => {
 }
 
 export const getSessionInfo = () => {
-    var info = sessionStorage.getItem(sessionInfoConst);
-    console.log(info);
-    return info;
+    return JSON.parse(sessionStorage.getItem(sessionInfoConst));
+}
+
+export const deleteSessionInfo = () => {
+    sessionStorage.clear();
 }

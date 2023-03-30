@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -23,8 +23,13 @@ const theme = createTheme();
 export default function SignIn() {
   	const [showError, setShowError] = useState('');
   	const [loading, setLoading] = useState(false);
-    const [token, setToken] = useState(getSessionInfo().userToken ?? '');
+    const [token, setToken] = useState('');
     const navigate = useNavigate();
+
+    useEffect(()=>{
+      const sessionInfo = getSessionInfo();
+      console.log(sessionInfo);
+    },[]);
 
   	const handleSubmit = (event) => {
         event.preventDefault();
@@ -44,6 +49,7 @@ export default function SignIn() {
                 setSessionInfo(req.data.token, data.get('email'));
                 setLoading(false);
                 navigate('/games');
+                window.location.reload();
             })
             .catch((err) => {
                 setShowError(err.response.data.message);

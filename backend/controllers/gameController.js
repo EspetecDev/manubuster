@@ -56,8 +56,37 @@ const getGames = asyncHandler(async (req, res) => {
 // @route GET /api/games
 // @access Public
 const getUserGames = asyncHandler(async (req, res) => {
-    const userGames = await Game.find({owner: req.user.id })
-    res.status(200).json({userGames});
+    const userGames = await Game.find({owner: req.user.id });
+    const rentUsersIds = [];
+    userGames.forEach((game) => {
+        if(game.lentTo){
+            rentUsersIds.push(game.lentTo);
+        }
+    });
+    var rentUsers = [];
+    for(var i=0; i<rentUsersIds.length; i++){
+        const userName = await User.findById(rentUsersIds[i]._id);
+        rentUsers.push({id: rentUsersIds[i]._id, user: userName.name});
+    }
+    newUserGames = [];
+    userGames.forEach((game) =>{
+        var newGame = game.toJSON();
+        if(game.lentTo){
+            var rentUser = rentUsers.filter((u) => { 
+                return u.id.id === game.lentTo.id;
+            });
+            if(!rentUser){
+                res.status(500).json({reason: 'server error'});
+                return game;
+            }
+            newGame.lentDisplayName = rentUser[0].user;
+            // days lent
+            const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+            newGame.daysLent = Math.round(Math.abs((Date.now() - game.reservedDate) / oneDay));
+        }
+        newUserGames.push(newGame);
+    })
+    res.status(200).json(newUserGames);
 });
 
 const getReservedGames = asyncHandler(async (req, res) => {

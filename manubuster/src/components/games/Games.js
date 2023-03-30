@@ -1,4 +1,4 @@
-import '../style/Games.css';
+import '../../style/Games.css';
 import GameCard from "./GameCard";
 import Grid from "@mui/material/Unstable_Grid2";
 import { Autocomplete, TextField } from "@mui/material";
