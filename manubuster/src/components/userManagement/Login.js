@@ -46,7 +46,7 @@ export default function SignIn() {
                 email: data.get('email'),
                 password: data.get('password'),
             }}).then( (req, res) => {
-                setSessionInfo(req.data.token, data.get('email'));
+                setSessionInfo({token: req.data.token, email: data.get('email'), name: req.data.name});
                 setLoading(false);
                 navigate('/games');
                 window.location.reload();

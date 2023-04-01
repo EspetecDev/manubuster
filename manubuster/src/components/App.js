@@ -14,8 +14,8 @@ function App() {
   const [userToken, setUserToken] = useState('');
   useEffect(() => {
     const sessionInfo = getSessionInfo();
-    if(sessionInfo && sessionInfo.userToken)
-      setUserToken(getSessionInfo(sessionInfo.userToken));
+    if(sessionInfo && sessionInfo.token)
+      setUserToken(getSessionInfo(sessionInfo.token));
   }, []);
 
   return (

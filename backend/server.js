@@ -9,7 +9,7 @@ const app = express();
 
 connectDB();
 app.use(cors({
-  methods: 'GET,POST,PATCH,DELETE,OPTIONS',
+  methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
   optionsSuccessStatus: 200,
   origin: 'http://localhost:4000'
 }));

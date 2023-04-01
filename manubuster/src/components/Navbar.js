@@ -16,22 +16,25 @@ import Avatar from '@mui/material/Avatar';
 import { deepOrange, deepPurple } from '@mui/material/colors';
 import { getSessionInfo, deleteSessionInfo } from '../helpers/helpers';
 import { useNavigate } from 'react-router-dom';
+import TextField from '@mui/material';
 import { Badge } from '@mui/icons-material';
 import MailIcon from '@mui/icons-material/Mail';
 
 function Navbar() {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [avatarChar, setAvatarChar] = useState('');
+	const [username, setUsername] = useState('');
 	const navigate = useNavigate();
 
 	useEffect(() => {
 		const sessionInfo = getSessionInfo();
 		if(sessionInfo){
-			setIsLoggedIn(sessionInfo.userToken);
-			if(sessionInfo.userMail)
-				setAvatarChar(sessionInfo.userMail.charAt(0).toUpperCase());
+			setIsLoggedIn(sessionInfo.token);
+			setUsername(sessionInfo.name ?? '');
+			if(username)
+				setAvatarChar(username.charAt(0).toUpperCase());
 		}
-	}, [isLoggedIn]);
+	}, []);
 
 	const handleLogout = () => {
 		deleteSessionInfo();
@@ -77,13 +80,14 @@ function Navbar() {
 				</div>
 				<div hidden={!isLoggedIn}>
 				<Box sx={{display: 'flex'}}>
-					<Button variant='contained' color="warning">
+					{/* <Button variant='contained' color="warning">
 						<Badge color="primary" variant="dot">
         					<AppRegistrationIcon />
       					</Badge>
-					</Button>
+					</Button> */}
 					<Button variant='contained' sx={{ marginLeft: "25px" }} onClick={handleLogout} startIcon={<LogoutIcon/>} className='btn' color="warning" >LOGOUT</Button>
 					<Avatar sx={{ bgcolor: deepOrange[500], marginLeft: "25px" }}>{avatarChar}</Avatar>
+					<Typography variant="h6" sx={{ marginLeft: "10px" }}>{username}</Typography>
 				</Box>
 				</div>
 		</Toolbar>

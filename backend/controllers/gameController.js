@@ -49,7 +49,16 @@ const getGameCover = asyncHandler(async (req, res) => {
 const getGames = asyncHandler(async (req, res) => {
     // get all games
     const games = await Game.find();
-    res.status(200).json({games});
+    var returnGames = [];
+    games.forEach( g => returnGames.push(g.toJSON()));
+    for(var i=0; i<games.length; i++){
+        const owner = await User.findById(games[i].owner);
+        if(!owner){
+            res.status(500).json({reason: 'internal error'});
+        }
+        returnGames[i].owner = owner.name;
+    }
+    res.status(200).json(returnGames);
 });
 
 // @desc Get user reserved games
@@ -226,10 +235,10 @@ const updateGame = asyncHandler(async (req, res) => {
 // @route DELETE /api/games/:id
 // @access Private
 const deleteGame = asyncHandler(async (req, res) => {
-    const game = await Game.findById(req.params.id);
+    const game = await Game.findById(req.body.id);
     if(!game){
         res.status(400);
-        throw new Error(`game id ${req.params.id} not found`);
+        throw new Error(`game id ${req.body.id} not found`);
     }
 
     const user = await User.findById(req.user.id)
@@ -238,13 +247,13 @@ const deleteGame = asyncHandler(async (req, res) => {
         throw new Error(`User id ${req.user.id} not found`);
     }
     // make sure that the logged user matches the goal user
-    if(game.owner.toString() !== user.id || !user.isAdmin){
+    if(game.owner.toString() !== user.id && !user.isAdmin){
         res.status(401)
         throw new Error('user not authorized');
     }
     
-    const deletedGame = await Game.findByIdAndDelete(req.params.id);
-    res.status(200).json({message:`delete goal ${req.params.id}`});
+    // const deletedGame = await Game.findByIdAndDelete(req.body.id);
+    res.status(200).json({message:`delete goal ${req.body.id}`});
 });
 
 const reserveGame = asyncHandler(async(req, res) => {
@@ -289,7 +298,12 @@ const returnGame = asyncHandler(async(req, res) => {
         throw new Error(`User id ${req.user.id} not found`);
     }
 
-    if(user._id.toString() !== game.lentTo.toString() && !user.isAdmin){
+    const allowedUser = (
+                            //user._id.toString() === game.lentTo.toString() &&
+                            user._id.toString() === game.owner.toString() ||
+                            user.isAdmin
+                        );
+    if(!allowedUser){
         res.status(401);
         throw new Error(`this user can't undo the reserve`);
     }

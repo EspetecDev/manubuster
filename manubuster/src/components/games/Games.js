@@ -19,7 +19,7 @@ const Games = () => {
         axios.get('http://localhost:5000/api/games/')
             .then( (res) => {
                 console.log('axios call');
-                setGames(res.data.games);
+                setGames(res.data);
             })
             .catch((err) => {
                 console.log(err);
