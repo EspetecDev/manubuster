@@ -1,5 +1,6 @@
 import { getSessionInfo } from "../../helpers/helpers";
 import axios from 'axios';
+import qs from 'qs';
 
 const axiosSettings = (method, needsToken, data, serviceUrl) => {
     return ({
@@ -7,7 +8,8 @@ const axiosSettings = (method, needsToken, data, serviceUrl) => {
         headers: {
             "Access-Control-Allow-Origin":"*",
             "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
-            "Authorization": needsToken ? `Bearer ${getSessionInfo().token}` : ""
+            "Authorization": needsToken ? `Bearer ${getSessionInfo().token}` : "",
+            "Content-Type" : 'application/json'
         },
         data: data,
         url: process.env.REACT_APP_BACKEND_URI+serviceUrl
@@ -37,6 +39,15 @@ export async function getUserGames() {
                 Object.getOwnPropertyDescriptor(g, '_id'));
             delete g['_id'];
         })
+        return req.data;
+    }).catch((e) => console.log(e));
+    return games;
+}
+
+export async function searchGames(inQuery) {
+
+    const games = await axios(axiosSettings('post', true, {query: inQuery}, '/games/query'))
+    .then( (req, res) => {
         return req.data;
     }).catch((e) => console.log(e));
     return games;

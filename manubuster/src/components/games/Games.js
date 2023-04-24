@@ -46,7 +46,7 @@ const Games = () => {
         <div className="games">
             <Grid container spacing={5}>
             {games.filter((game) => { return inputValue ? game.name.includes(inputValue) : true}).map((_, index) => (
-                <Grid xs={8} sm={4} md={2} key={index}>
+                <Grid item xs={8} sm={4} md={2} key={index}>
                     <GameCard gameInfo={games[index]}></GameCard>
                 </Grid>
             ))}      

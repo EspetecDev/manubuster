@@ -3,7 +3,8 @@ import axios from 'axios';
 import { Box } from '@mui/system';
 import { 
     Button,
-    Tooltip } from '@mui/material';
+    Tooltip, 
+    Typography} from '@mui/material';
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
@@ -56,4 +57,9 @@ const DataGridActions = (props) => {
     }
 };
 
+export const DataGridAddGame = (props) => {
+    return(
+        <Typography>AA</Typography>
+    )
+};
 export default DataGridActions;

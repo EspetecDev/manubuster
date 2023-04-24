@@ -13,6 +13,21 @@ const headers = {
     'Authorization': process.env.IGDB_TOKEN,
 };
 
+// OJOCUIDAO!!! this is cached so we save reptetitive calls
+const IGDB_PLATFORMS = {
+    '130': 'Nintendo Switch',
+    '48': 'PlayStation 4',
+    '167': 'PlayStation 5',
+    '6': 'PC'
+}
+
+function getPlatformName(platforId) {
+    if(platforId in IGDB_PLATFORMS)
+        return IGDB_PLATFORMS[platforId]
+    else 
+        return ''
+}
+
 async function GetImageByGame(gameName) {
     try {
         const image = await axios.get('https://i.imgur.com/VMUUoOU.jpeg');
@@ -319,6 +334,77 @@ const returnGame = asyncHandler(async(req, res) => {
     res.status(200).json({message:`returned game ${game}`});
 });
 
+const queryIGDBGames = asyncHandler(async(req, res) => {
+    var query = req.body.query;
+    if(!query){
+        res.status(400);
+        throw new Error(`empty query`);
+    }
+    
+    var gameList = []
+    var coverIds = []
+    await axios({
+          url: `${baseURI}/games`,
+          method: 'POST',
+          headers: headers,
+          data: `fields name, cover, platforms; search "${query}"; limit 50;`
+        })
+        .then(response => {
+            // let res = response.data;
+            response.data.forEach(g => {
+                gameList.push(
+                    {
+                        name: g.name ?? '',
+                        coverId: g.cover ?? '',
+                        platforms: g.platforms
+                    }
+                )
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+
+    // {id: 0, name: 'game1', platform: platforms[0]},
+    promises = [];
+    covers = [];
+    gameList.forEach(g => { promises.push(
+        axios({
+            url: `${baseURI}/covers`,
+              method: 'POST',
+              headers: headers,
+              data: `fields url; where id = ${g.coverId}; limit 1;`
+            })
+            .then(response => {
+                covers.push(response.data[0].url ?? '')
+            })
+            .catch(err => {
+                console.log(err);
+        })
+    )});
+    await Promise.all(promises);
+    
+    idx = 0;
+    finalList = [];
+    gameList.forEach(g => {
+        if (g.platforms)
+            g.platforms.forEach(p => {
+                if(p in IGDB_PLATFORMS)
+                    finalList.push(
+                        {
+                            id: idx++,
+                            name: g.name,
+                            platform: getPlatformName(p),
+                            cover: covers[idx]
+                        }
+                    )
+            });
+    });
+
+    res.status(200).json(finalList);
+});
+
+
 module.exports = {
     getGames,
     getUserGames,
@@ -328,5 +414,6 @@ module.exports = {
     reserveGame,
     returnGame,
     getReservedGames,
-    getGameCover
+    getGameCover,
+    queryIGDBGames
 }
