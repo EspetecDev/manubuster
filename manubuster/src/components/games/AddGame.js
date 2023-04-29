@@ -2,16 +2,30 @@ import '../../style/Games.css';
 import { Button, ListItem, TextField, Box, Typography, Autocomplete, FormLabel } from "@mui/material";
 import Grid from '@mui/material/Grid'; // Grid version 1
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import {useState} from 'react';
+import {useState, forwardRef} from 'react';
 import { DataGridAddGame } from "./DataGridComponents";
 import TravelExploreSharpIcon from '@mui/icons-material/TravelExploreSharp';
 import { searchGames } from './GameApiCalls';
-import { rowSelectionStateInitializer } from '@mui/x-data-grid/internals';
+import * as GAC from './GameApiCalls';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
+
+const Alert = forwardRef(function Alert(
+  props,
+  ref,
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const AddGame = () => {
     const platforms = ['Playstation 4', 'Playstation 5', 'Nintendo Switch'];
     const [searchResults, setSearchResults] = useState([]);
     const [loadingData, setLoadingData] = useState(false);
+    /* States:  error warning info success */
+    const [snackState, setSnackState] = useState(false);
+    const [snackMessage, setSnackMessage] = useState('');
+    const [snackType, setSnackType] = useState('');
+    const [processAddGame, setProcessAddGame] = useState(false);
     const [showGrid, setShowGrid] = useState(true);
     const [query, setQueryValue] = useState('');
     const [platform, setPlatformValue] = useState('');
@@ -28,6 +42,13 @@ const AddGame = () => {
         setLoadingData(false);
     }
 
+    async function addGame(game, btn){
+        let message = await GAC.addGame(game.igdbId);
+        setSnackState(true);
+        setSnackMessage(message.msg);
+        setSnackType(message.type);
+    }
+
     const columns =  [
         {
             flex: 1,
@@ -36,7 +57,7 @@ const AddGame = () => {
             renderCell: (params) => <img src={params.row.cover} />
         },
         {
-            flex: 1,
+            flex: 2,
             field: 'name',
             headerName: 'Name'
         },
@@ -46,12 +67,11 @@ const AddGame = () => {
             headerName: 'Platform'
         },
         {
-            flex: 1,
             field: 'actions',
             type: 'actions',
             headerName: 'Actions',
-            width: 150,
-            renderCell: (params) => <DataGridAddGame/>
+            width: 50,
+            renderCell: (params) => <DataGridAddGame params={{...params}} callback={addGame} />
         }
         
       ];
@@ -89,7 +109,7 @@ const AddGame = () => {
                         filter: {
                           filterModel: {
                             items: [],
-                            quickFilterValues: ['ab'],
+                            quickFilterValues: [''],
                           },
                         },
                       }}
@@ -105,6 +125,12 @@ const AddGame = () => {
                       }}
                 />
                 </Box>
+
+                <Snackbar open={snackState} autoHideDuration={6000} anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} onClose={()=> setSnackState(false)}>
+                <Alert onClose={()=> setSnackState(false)}  severity={snackType} sx={{ width: '100%' }}>
+                {snackMessage}
+                </Alert>
+                </Snackbar>
         </form>
     );
 }

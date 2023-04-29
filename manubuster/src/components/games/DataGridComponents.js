@@ -8,6 +8,7 @@ import {
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { getSessionInfo } from '../../helpers/helpers';
 import * as GAC from './GameApiCalls';
@@ -28,6 +29,7 @@ const DataGridActions = (props) => {
             GAC.unreserveGame(currentGame);
             callbackFunction();
         }
+        setShowConfirm('');
     };
 
     if(!showConfirm){
@@ -58,8 +60,19 @@ const DataGridActions = (props) => {
 };
 
 export const DataGridAddGame = (props) => {
+
+    const callbackFunction = props.callback;
+    const currentGame = props.params.row;
+    const currentBtn = props.params;
+    const button =  <Button id='addGameBtn' onClick={handleAddGame}><AddCircleIcon sx={{fontSize: 40}}  /></Button>;
+    function handleAddGame(){
+        callbackFunction(currentGame, button);
+    }
+
     return(
-        <Typography>AA</Typography>
+        <Tooltip title='Add game'>
+            {button}
+        </Tooltip>
     )
 };
 export default DataGridActions;

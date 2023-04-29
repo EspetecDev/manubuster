@@ -5,35 +5,50 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Grid } from '@mui/material';
 import { useState, useEffect } from "react";
 import {yellowColor, blueColor} from '../../helpers/consts';
 import { createTheme, ThemeProvider } from '@mui/material';
+import { getSessionInfo } from '../../helpers/helpers';
+import * as GAC from './GameApiCalls';
 
 const theme = createTheme({palette: { warning: {main: yellowColor}, primary: {main: blueColor}}});
 
 const GameCard = (gameInfoParam) => {
-    const gameInfo = gameInfoParam.gameInfo ?? '';
-    const [coverLoaded, setCoverLoaded] = useState(false);
+    const [gameInfo, setGameInfo] = useState({});
+    const [showReserveButton, setShowReserveButton] = useState(true);
     const [reserveState, setReserveState] = useState('');
 
-    var coverURL = '';
-    if(gameInfo.coverUrl){
-        const imageSize = 't_'+'cover_big';
-        gameInfo.coverUrl.split('/').forEach((elem) => { 
-            coverURL = coverURL.concat('/', elem ? elem.startsWith('t_') ? imageSize : elem : '');
-        });
+    function checkGameStatus(param){
+        let localGameInfo = param;
+        if (!param)
+            localGameInfo = gameInfo;
+        const sessionInfo = getSessionInfo();
+        return localGameInfo.owner !== sessionInfo.name && !localGameInfo.reservedDate
+
     }
+
+    useEffect( () => {
+        setGameInfo(gameInfoParam.gameInfo);
+        setShowReserveButton(checkGameStatus(gameInfoParam.gameInfo));
+    }, []);
+
+    async function onReserve(){
+        await GAC.reserveGame(gameInfo._id);
+        setShowReserveButton(checkGameStatus(gameInfoParam.gameInfo));
+    }
+    
+    
 
 
     return ( 
-        <div className="zoom">
+        <div className="zoom" onClick={(params) => console.log(gameInfo)}>
         {/* {!coverLoaded && <CircularProgress color="warning" size="md" value={50} variant="plain"/>} */}
         <Card sx={{ maxWidth: 250 }}>
-            <CardMedia component="img" src={coverURL}/>
+            <CardMedia component="img" src={gameInfo.coverUrl}/>
             <CardContent>
                 <ThemeProvider theme={theme}>
-                    { !coverURL && <CircularProgress color="warning" value={50} />}
+                    { !gameInfo.coverUrl && <CircularProgress color="warning" value={50} />}
                 </ThemeProvider>
                 <Typography gutterBottom variant="h5" component="div">{gameInfo.name ? gameInfo.name : 'game'}</Typography>
                 <Typography gutterBottom variant="h5" component="div">{gameInfo.platform ? gameInfo.platform : 'switch'}</Typography>
@@ -43,8 +58,8 @@ const GameCard = (gameInfoParam) => {
                   <Typography gutterBottom variant="h5" component="div">{gameInfo.reservedDate}</Typography>
                 }
             </CardContent>
-            <CardActions>
-                <Button size="large">RESERVE</Button>
+            <CardActions sx={{display: "block"}} >
+                {showReserveButton  &&  <Button variant='contained' onClick={onReserve} size="medium">RESERVE</Button>}
             </CardActions>
         </Card>
         </div>

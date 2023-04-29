@@ -45,10 +45,39 @@ export async function getUserGames() {
 }
 
 export async function searchGames(inQuery) {
-
     const games = await axios(axiosSettings('post', true, {query: inQuery}, '/games/query'))
     .then( (req, res) => {
         return req.data;
     }).catch((e) => console.log(e));
     return games;
+}
+
+export async function addGame(igdbId){
+    const errMsg = {msg: 'An error has ocurred', type: "error" };
+    const msg = axios(axiosSettings('post', true, {gameId: igdbId}, '/games/userGames'))
+    .then((req, res) =>{
+        if(!req.data.msg)
+            return errMsg;
+        else
+            return {msg: req.data.msg, type: req.status === 200 ? "success" : "error" };
+    }).catch((e) => {
+        return errMsg;
+    });
+    return msg;
+}
+
+export async function reserveGame(gameId){
+    // const errMsg = {msg: 'An error has ocurred', type: "error" };
+    // const msg = 
+    axios(axiosSettings('post', true, {gameId: gameId}, '/games/reserve'))
+    .then((req, res) =>{
+        // if(!req.data.msg)
+        //     return errMsg;
+        // else
+        //     return {msg: req.data.msg, type: req.status === 200 ? "success" : "error" };
+        console.log('success reserve');
+    }).catch((e) => {
+        console.log(e);
+    });
+    // return msg;
 }

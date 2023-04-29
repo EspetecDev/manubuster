@@ -10,26 +10,41 @@ import axios from 'axios';
 const Games = () => {
     const [games, setGames] = useState([]);
     const [inputValue, setInputValue] = useState('');
-    const gamesTest = [
-        {name: 'test1', owner:'owner1', platform:'platform1'},
-        {name: 'test2', owner:'owner2', platform:'platform2'},
-    ]
+    const [comps, setComps] = useState([]);
 
     useEffect( () => {
         axios.get('http://localhost:5000/api/games/')
             .then( (res) => {
-                console.log('axios call');
                 setGames(res.data);
+                filterCards();
             })
             .catch((err) => {
                 console.log(err);
             });
     }, []);
     
+    function filterCards(){
+        var list = [];
+        //|| g.platform.includes(inputValue)
+        games.filter( g => { 
+            return inputValue ? g.name.includes(inputValue) :true 
+        }).map((gameInfo, index) => (
+            list.push(<Grid item key={index} xs={8} sm={4} md={2} >
+                <GameCard gameInfo={gameInfo}></GameCard>
+            </Grid>)
+        ));
+
+        setComps(list);
+
+        // list.forEach(e => { console.log(e.props.children.props.gameInfo.name)});
+        // console.log();
+    }
+
     return (
         <div className="gamesWidget">
         <div className="gamesAutocomplete">
             <Autocomplete
+                freeSolo
                 id="gameListWidget"
                 options={games.sort((a, b) => -b.platform.localeCompare(a.platform))}
                 groupBy={(game) => game.platform}
@@ -39,17 +54,19 @@ const Games = () => {
                 inputValue={inputValue}
                 onInputChange={(event, newInputValue) => {
                     setInputValue(newInputValue); 
+                    filterCards();
                 }}
             />
         </div>
 
         <div className="games">
             <Grid container spacing={5}>
-            {games.filter((game) => { return inputValue ? game.name.includes(inputValue) : true}).map((_, index) => (
-                <Grid item xs={8} sm={4} md={2} key={index}>
-                    <GameCard gameInfo={games[index]}></GameCard>
+            {games.filter( g => { return g.name.includes(inputValue ?? '')}).map((gameInfo, index) => (
+                <Grid item key={index} xs={8} sm={4} md={2} >
+                    <GameCard gameInfo={gameInfo}></GameCard>
                 </Grid>
-            ))}      
+            ))}
+            {/* {comps} */}
             </Grid>
         </div>
         </div>

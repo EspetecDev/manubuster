@@ -53,7 +53,7 @@ function Navbar() {
 
   	return (
 		<ThemeProvider theme={theme}>
-			<AppBar position="static">
+			<AppBar position="static" sx={{overflow: "hidden"}}>
 			<Toolbar sx={{ justifyContent: 'space-between' }}>
 				<Box sx={{display: 'flex'}}>
 					<Typography variant="h6" className='logo'>

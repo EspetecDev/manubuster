@@ -21,6 +21,8 @@ const IGDB_PLATFORMS = {
     '6': 'PC'
 }
 
+const IGDB_IMAGE_SIZE = "t_1080p"
+
 function getPlatformName(platforId) {
     if(platforId in IGDB_PLATFORMS)
         return IGDB_PLATFORMS[platforId]
@@ -179,6 +181,75 @@ const setGame = asyncHandler(async (req, res) => {
     res.status(200).json(newGame);
 });
 
+const setIGDBGame = asyncHandler(async (req, res) => {
+    // modify original method 
+    var igdbIDValue = req.body.gameId;
+    if(!igdbIDValue){
+        res.status(400);
+        throw new Error('Not valid igdbId');
+    }
+
+    const owner = await User.findById(req.user.id);
+    if(owner.length === 0){
+        res.status(400);
+        throw new Error(`Owner: ${req.user.id} is not registered`);
+    }
+
+    gameInfo = {}
+    await axios({
+          url: `${baseURI}/games`,
+          method: 'POST',
+          headers: headers,
+          data: `fields name, platforms, cover ; where id = ${igdbIDValue}; limit 1;`
+        })
+        .then(response => {
+            gameInfo = {
+                name: response.data[0].name ?? '',
+                owner: owner.id,
+                platform: getPlatformName(response.data[0].platforms[0]) ?? '',
+                igdbID: igdbIDValue,
+                coverUrl: response.data[0].cover
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
+
+    gameUrl = "";
+    await axios({
+            url: `${baseURI}/covers`,
+            method: 'POST',
+            headers: headers,
+            data: `fields url; where id = ${gameInfo.coverUrl}; limit 1;`
+        })
+        .then(response => {
+            gameUrl = response.data[0].url;
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    
+    if(!gameUrl){
+        res.status(400);
+        throw new Error(`no cover url found`);
+    }
+    
+    gameInfo.coverUrl = gameUrl.replace("t_thumb", IGDB_IMAGE_SIZE);
+    // check if already exists
+    const game = await Game.find({
+        name: gameInfo.name,
+        platform : gameInfo.platform
+    });
+    if(game.length !== 0){
+        res.status(400);
+        throw new Error(`Game already registered`);
+    }
+
+    const newGame = await Game.create(gameInfo);
+    // newGame.owner = owner._id;
+    // await newGame.save();
+    res.status(200).json({msg: "Game successfully added"});
+});
 // @desc Update game
 // @route PUT /api/games/:id
 // @access Private
@@ -267,7 +338,7 @@ const deleteGame = asyncHandler(async (req, res) => {
         throw new Error('user not authorized');
     }
     
-    // const deletedGame = await Game.findByIdAndDelete(req.body.id);
+    const deletedGame = await Game.findByIdAndDelete(req.body.id);
     res.status(200).json({message:`delete goal ${req.body.id}`});
 });
 
@@ -347,7 +418,7 @@ const queryIGDBGames = asyncHandler(async(req, res) => {
           url: `${baseURI}/games`,
           method: 'POST',
           headers: headers,
-          data: `fields name, cover, platforms; search "${query}"; limit 50;`
+          data: `fields id, name, cover, platforms; search "${query}"; limit 50;`
         })
         .then(response => {
             // let res = response.data;
@@ -356,7 +427,8 @@ const queryIGDBGames = asyncHandler(async(req, res) => {
                     {
                         name: g.name ?? '',
                         coverId: g.cover ?? '',
-                        platforms: g.platforms
+                        platforms: g.platforms,
+                        igdbId: g.id ?? -1
                     }
                 )
             });
@@ -376,7 +448,10 @@ const queryIGDBGames = asyncHandler(async(req, res) => {
               data: `fields url; where id = ${g.coverId}; limit 1;`
             })
             .then(response => {
-                covers.push(response.data[0].url ?? '')
+                let url = response.data[0].url ?? '';
+                if(url)
+                    url = url.replace("t_thumb", IGDB_IMAGE_SIZE);
+                covers.push(url)
             })
             .catch(err => {
                 console.log(err);
@@ -395,7 +470,8 @@ const queryIGDBGames = asyncHandler(async(req, res) => {
                             id: idx++,
                             name: g.name,
                             platform: getPlatformName(p),
-                            cover: covers[idx]
+                            cover: covers[idx],
+                            igdbId: g.igdbId
                         }
                     )
             });
@@ -415,5 +491,6 @@ module.exports = {
     returnGame,
     getReservedGames,
     getGameCover,
-    queryIGDBGames
+    queryIGDBGames,
+    setIGDBGame
 }

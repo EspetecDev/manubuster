@@ -1,20 +1,25 @@
+import '../../style/MyGames.css';
 import * as React from 'react';
 import axios from 'axios';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import { getSessionInfo } from '../../helpers/helpers';
-import { Button, Modal, Tooltip } from '@mui/material';
+import { Button, Grid, Modal, Stack, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import DataGridActions from './DataGridComponents';
 import * as GAC from './GameApiCalls';
 import AddGame from './AddGame';
 import { Add } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+
 
 const MyGames = () => {
     const [games, setGames] = React.useState([]);
     const [openNewGameModal, setopenNewGameModal] = React.useState(false);
     const [loadingData, setLoadingData] = React.useState(true);
+	const navigate = useNavigate();
+
     const style = {
         position: 'absolute',
         top: '50%',
@@ -29,44 +34,45 @@ const MyGames = () => {
         pb: 3,
       };
     const refreshGames = async () => {
+        navigate(0);
+    }
+
+    async function loadData(){
         setLoadingData(true);
         setGames(await GAC.getUserGames());
         setLoadingData(false);
     }
-    function addGame() {
-    
-    }
-    
+
     function handleClose() {
         setopenNewGameModal(false);
+        refreshGames();
     }
 
     React.useEffect( () => {
-        refreshGames();
+        loadData();
     }, []);
 
     const columns =  [
         {
-            flex: 1,
+            flex: 2,
             field: 'name',
             headerName: 'Name'
         },
         {
             flex: 1,
             field: 'platform',
-            headerName: 'Platform'
+            headerName: 'Platform',
         },
         {
             flex: 1,
             field: 'lentDisplayName',
-            headerName: 'Lent to'
+            headerName: 'Lent to',
         },
         {
             flex: 1,
             field: 'reservedDate',
             headerName: 'Reserved Date',
             type: 'date',
-            minWidth: 200,
             valueGetter: ({ value }) => value && new Date(value),
         },
         {
@@ -79,7 +85,6 @@ const MyGames = () => {
             field: 'actions',
             type: 'actions',
             headerName: 'Actions',
-            width: 150,
             renderCell: (params) => <DataGridActions params={{...params}} callback={refreshGames}/>
         }
         
@@ -87,16 +92,16 @@ const MyGames = () => {
 
     return ( 
         <div className="mygames">
-        <Box sx={{ width: '75%', display:'inline-block', marginTop: '20px'}}>
-            <Button sx={{display: 'block', marginBottom: '20px'}} variant='contained' onClick={() => setopenNewGameModal(true)}>Add Game</Button>
-            <Box sx={{ height: '500px', width: '75%', display:'flex' }}>
-                <DataGrid
-                    loading={loadingData}
-                    columns={columns}
-                    rows={games}
-                    />
-            </Box>
-        </Box>
+        <Stack spacing={2}>
+            <Button variant='contained' onClick={() => setopenNewGameModal(true)}>Add Game</Button>
+            <DataGrid
+                autoHeight
+                sx={{height: "500px"}}
+                loading={loadingData}
+                columns={columns}
+                rows={games}>
+            </DataGrid>
+        </Stack>
         <Modal
         open={openNewGameModal}
         onClose={handleClose}
