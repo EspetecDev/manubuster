@@ -51,7 +51,7 @@ export default function SignIn() {
                 window.location.reload();
             })
             .catch((err) => {
-                setShowError(err.response.data.message);
+                setShowError(err.message);
                 setLoading(false);
                 console.log(err);
             });
