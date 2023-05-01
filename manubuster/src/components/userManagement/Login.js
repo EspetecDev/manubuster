@@ -15,7 +15,9 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 import { CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import {getSessionInfo, setSessionInfo} from '../../helpers/helpers';
+import {getSessionInfo} from '../../helpers/helpers';
+import * as GAC from '../games/GameApiCalls';
+import { loginUser } from '../games/GameApiCalls';
 
 const theme = createTheme();
 
@@ -30,32 +32,44 @@ export default function SignIn() {
       console.log(sessionInfo);
     },[]);
 
-  	const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        setLoading(true);
-        axios({
-            method: 'post',
-            headers: {
-                "Access-Control-Allow-Origin":"*",
-                "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
-            },
-            url: process.env.REACT_APP_BACKEND_URI+'/users/login',
-            data:{
-                email: data.get('email'),
-                password: data.get('password'),
-            }}).then( (req, res) => {
-                setSessionInfo({token: req.data.token, email: data.get('email'), name: req.data.name});
-                setLoading(false);
-                navigate('/games');
-                window.location.reload();
-            })
-            .catch((err) => {
-                setShowError(err.message);
-                setLoading(false);
-                console.log(err);
-            });
-    };
+    async function handleSubmit(event) {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      setLoading(true);
+      let errorMessage = await GAC.loginUser(data.get('email'), data.get('password'));
+      
+      if(errorMessage){
+        setShowError(errorMessage);
+        setLoading(false);
+        console.log(errorMessage);
+      }
+      else{
+        setLoading(false);
+        navigate('/games');
+        window.location.reload();
+      }
+      // axios({
+      //     method: 'post',
+      //     headers: {
+      //         "Access-Control-Allow-Origin":"*",
+      //         "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+      //     },
+      //     url: process.env.REACT_APP_BACKEND_URI+'/users/login',
+      //     data:{
+      //         email: data.get('email'),
+      //         password: data.get('password'),
+      //     }}).then( (req, res) => {
+      //         setSessionInfo({token: req.data.token, email: data.get('email'), name: req.data.name});
+      //         setLoading(false);
+      //         navigate('/games');
+      //         window.location.reload();
+      //     })
+      //     .catch((err) => {
+      //         setShowError(err.message);
+      //         setLoading(false);
+      //         console.log(err);
+      //     });
+    }
 
   return (
     <ThemeProvider theme={theme}>

@@ -1,4 +1,4 @@
-import { getSessionInfo } from "../../helpers/helpers";
+import { getSessionInfo, setSessionInfo } from "../../helpers/helpers";
 import axios from 'axios';
 
 const axiosSettings = (method, needsToken, data, serviceUrl) => {
@@ -79,4 +79,19 @@ export async function reserveGame(gameId){
         console.log(e);
     });
     // return msg;
+}
+
+export async function loginUser(email, pass){
+    var errorMessage = "";
+    axios(axiosSettings('post', false, {email: email, password: pass}, '/users/login'))
+    .then((req, res) =>{
+        console.log('success reserve');
+        setSessionInfo({token: req.data.token, email: email, name: req.data.name});
+        return errorMessage;
+    }).catch((e) => {
+        errorMessage = e;
+        console.log(e);
+        return errorMessage;
+    });
+    return errorMessage;
 }

@@ -11,8 +11,6 @@
 # production
 /build
 
-# connect info
-/connect
 
 # misc
 .DS_Store
