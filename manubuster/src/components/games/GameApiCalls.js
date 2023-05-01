@@ -1,6 +1,5 @@
 import { getSessionInfo } from "../../helpers/helpers";
 import axios from 'axios';
-import qs from 'qs';
 
 const axiosSettings = (method, needsToken, data, serviceUrl) => {
     return ({

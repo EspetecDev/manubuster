@@ -23,7 +23,6 @@ const theme = createTheme();
 export default function SignIn() {
   	const [showError, setShowError] = useState('');
   	const [loading, setLoading] = useState(false);
-    const [token, setToken] = useState('');
     const navigate = useNavigate();
 
     useEffect(()=>{

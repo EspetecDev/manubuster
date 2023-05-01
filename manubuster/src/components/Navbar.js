@@ -6,19 +6,16 @@ import Typography from '@mui/material/Typography';
 import { Box,Button } from '@mui/material';
 import { ThemeProvider } from '@mui/material';
 import { theme } from '../helpers/consts';
-import { Link, Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import GamepadIcon from '@mui/icons-material/Gamepad';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import Avatar from '@mui/material/Avatar';
-import { deepOrange, deepPurple } from '@mui/material/colors';
+import { deepOrange } from '@mui/material/colors';
 import { getSessionInfo, deleteSessionInfo } from '../helpers/helpers';
 import { useNavigate } from 'react-router-dom';
-import TextField from '@mui/material';
-import { Badge } from '@mui/icons-material';
-import MailIcon from '@mui/icons-material/Mail';
 
 function Navbar() {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -41,15 +38,15 @@ function Navbar() {
 		navigate(0);
 	};
 
-	const notificationsLabel = (count) => {
-		if (count === 0) {
-			return 'no notifications';
-		  }
-		  if (count > 99) {
-			return 'more than 99 notifications';
-		  }
-		  return `${count} notifications`;
-	};
+	// const notificationsLabel = (count) => {
+	// 	if (count === 0) {
+	// 		return 'no notifications';
+	// 	  }
+	// 	  if (count > 99) {
+	// 		return 'more than 99 notifications';
+	// 	  }
+	// 	  return `${count} notifications`;
+	// };
 
   	return (
 		<ThemeProvider theme={theme}>

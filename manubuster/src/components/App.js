@@ -1,7 +1,5 @@
 import '../style/App.css';
 import {Routes, Route} from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { getSessionInfo } from '../helpers/helpers';
 import Login from './userManagement/Login';
 import Navbar from './Navbar';
 import Games from './games/Games';  
@@ -11,13 +9,6 @@ import Recover from './userManagement/Recover';
 import Home from './Home';
 
 function App() {
-  const [userToken, setUserToken] = useState('');
-  useEffect(() => {
-    const sessionInfo = getSessionInfo();
-    if(sessionInfo && sessionInfo.token)
-      setUserToken(getSessionInfo(sessionInfo.token));
-  }, []);
-
   return (
     <div className="App">
         <Navbar/>

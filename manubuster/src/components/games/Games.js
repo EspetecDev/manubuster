@@ -10,35 +10,16 @@ import axios from 'axios';
 const Games = () => {
     const [games, setGames] = useState([]);
     const [inputValue, setInputValue] = useState('');
-    const [comps, setComps] = useState([]);
 
     useEffect( () => {
         axios.get('http://localhost:5000/api/games/')
             .then( (res) => {
                 setGames(res.data);
-                filterCards();
             })
             .catch((err) => {
                 console.log(err);
             });
     }, []);
-    
-    function filterCards(){
-        var list = [];
-        //|| g.platform.includes(inputValue)
-        games.filter( g => { 
-            return inputValue ? g.name.includes(inputValue) :true 
-        }).map((gameInfo, index) => (
-            list.push(<Grid item key={index} xs={8} sm={4} md={2} >
-                <GameCard gameInfo={gameInfo}></GameCard>
-            </Grid>)
-        ));
-
-        setComps(list);
-
-        // list.forEach(e => { console.log(e.props.children.props.gameInfo.name)});
-        // console.log();
-    }
 
     return (
         <div className="gamesWidget">
@@ -54,7 +35,6 @@ const Games = () => {
                 inputValue={inputValue}
                 onInputChange={(event, newInputValue) => {
                     setInputValue(newInputValue); 
-                    filterCards();
                 }}
             />
         </div>
@@ -66,7 +46,6 @@ const Games = () => {
                     <GameCard gameInfo={gameInfo}></GameCard>
                 </Grid>
             ))}
-            {/* {comps} */}
             </Grid>
         </div>
         </div>

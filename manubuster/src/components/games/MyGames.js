@@ -1,16 +1,11 @@
 import '../../style/MyGames.css';
 import * as React from 'react';
-import axios from 'axios';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
-import { getSessionInfo } from '../../helpers/helpers';
-import { Button, Grid, Modal, Stack, Tooltip } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
+import { Button, Modal, Stack } from '@mui/material';
 import DataGridActions from './DataGridComponents';
 import * as GAC from './GameApiCalls';
 import AddGame from './AddGame';
-import { Add } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 

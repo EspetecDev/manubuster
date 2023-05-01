@@ -5,7 +5,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { CircularProgress, Grid } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import { useState, useEffect } from "react";
 import {yellowColor, blueColor} from '../../helpers/consts';
 import { createTheme, ThemeProvider } from '@mui/material';
@@ -15,9 +15,8 @@ import * as GAC from './GameApiCalls';
 const theme = createTheme({palette: { warning: {main: yellowColor}, primary: {main: blueColor}}});
 
 const GameCard = (gameInfoParam) => {
-    const [gameInfo, setGameInfo] = useState({});
+    const [gameInfo] = useState(gameInfoParam.gameInfo);
     const [showReserveButton, setShowReserveButton] = useState(true);
-    const [reserveState, setReserveState] = useState('');
 
     function checkGameStatus(param){
         let localGameInfo = param;
@@ -29,7 +28,6 @@ const GameCard = (gameInfoParam) => {
     }
 
     useEffect( () => {
-        setGameInfo(gameInfoParam.gameInfo);
         setShowReserveButton(checkGameStatus(gameInfoParam.gameInfo));
     }, []);
 
@@ -42,8 +40,7 @@ const GameCard = (gameInfoParam) => {
 
 
     return ( 
-        <div className="zoom" onClick={(params) => console.log(gameInfo)}>
-        {/* {!coverLoaded && <CircularProgress color="warning" size="md" value={50} variant="plain"/>} */}
+        <div className="zoom">
         <Card sx={{ maxWidth: 250 }}>
             <CardMedia component="img" src={gameInfo.coverUrl}/>
             <CardContent>

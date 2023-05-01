@@ -11,7 +11,7 @@ connectDB();
 app.use(cors({
   methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
   optionsSuccessStatus: 200,
-  origin: 'http://localhost:4000'
+  origin: 'http://localhost'
 }));
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from

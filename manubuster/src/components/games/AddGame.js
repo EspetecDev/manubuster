@@ -1,5 +1,5 @@
 import '../../style/Games.css';
-import { Button, ListItem, TextField, Box, Typography, Autocomplete, FormLabel } from "@mui/material";
+import { Button, TextField, Box, Typography, Autocomplete } from "@mui/material";
 import Grid from '@mui/material/Grid'; // Grid version 1
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import {useState, forwardRef} from 'react';
@@ -8,7 +8,7 @@ import TravelExploreSharpIcon from '@mui/icons-material/TravelExploreSharp';
 import { searchGames } from './GameApiCalls';
 import * as GAC from './GameApiCalls';
 import Snackbar from '@mui/material/Snackbar';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import MuiAlert from '@mui/material/Alert';
 
 const Alert = forwardRef(function Alert(
   props,
@@ -25,10 +25,6 @@ const AddGame = () => {
     const [snackState, setSnackState] = useState(false);
     const [snackMessage, setSnackMessage] = useState('');
     const [snackType, setSnackType] = useState('');
-    const [processAddGame, setProcessAddGame] = useState(false);
-    const [showGrid, setShowGrid] = useState(true);
-    const [query, setQueryValue] = useState('');
-    const [platform, setPlatformValue] = useState('');
 
     async function getSearchResults(event) {
         setLoadingData(true);
@@ -37,7 +33,8 @@ const AddGame = () => {
         let result =  await searchGames(data.get("query"));
         console.log(result)
         setSearchResults(result);
-        const platform = data.get("platform");
+        // pending filter for platorm
+        // const platform = data.get("platform");
 
         setLoadingData(false);
     }
@@ -54,7 +51,7 @@ const AddGame = () => {
             flex: 1,
             field: 'cover',
             headerName: 'Cover',
-            renderCell: (params) => <img src={params.row.cover} />
+            renderCell: (params) => <img alt='' src={params.row.cover} />
         },
         {
             flex: 2,
