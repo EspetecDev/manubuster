@@ -6,7 +6,6 @@ import Games from './games/Games';
 import MyGames from './games/MyGames';  
 import Signup from './userManagement/Signup';
 import Recover from './userManagement/Recover';
-import Home from './Home';
 import { getSessionInfo } from '../helpers/helpers';
 
 const ProtectedRoute = ({ children }) => {
@@ -23,7 +22,7 @@ function App() {
     <div className="App">
         <Navbar/>
         <Routes>
-          <Route path='/' element={<Home/>}/>
+          <Route path='/' element={<Login/>}/>
 		      <Route path='/games' element={
             <ProtectedRoute>
               <Games/>
