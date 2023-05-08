@@ -40,7 +40,7 @@ const AddGame = () => {
     }
 
     async function addGame(game, btn){
-        let message = await GAC.addGame(game.igdbId);
+        let message = await GAC.addGame(game.igdbId, game.platform);
         setSnackState(true);
         setSnackMessage(message.msg);
         setSnackType(message.type);
@@ -51,7 +51,7 @@ const AddGame = () => {
             flex: 1,
             field: 'cover',
             headerName: 'Cover',
-            renderCell: (params) => <img alt='' src={params.row.cover} />
+            renderCell: (params) => <img onClick={e => console.log(e)} alt='' src={params.row.cover} />
         },
         {
             flex: 2,
@@ -75,14 +75,14 @@ const AddGame = () => {
 
     return ( 
         <form onSubmit={getSearchResults}>
-            <Grid container spacing={3} >
+            <Grid container alignItems="stretch" spacing={3} >
                 <Grid item xs={12}>   
                     <Typography>Add Game</Typography>
                 </Grid>
                 <Grid item xs={2} >
                         <TextField id="query" name="query" label="Game Name" type="search" /> 
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item display="flex" xs={3}>
                     <Autocomplete
                         disablePortal
                         id="platform"
