@@ -74,6 +74,8 @@ const getGames = asyncHandler(async (req, res) => {
             res.status(500).json({reason: 'internal error'});
         }
         returnGames[i].owner = owner.name;
+        if(returnGames[i].reservedDate)
+            returnGames[i].reservedDate = returnGames[i].reservedDate.toLocaleDateString('es-ES');
     }
     res.status(200).json(returnGames);
 });
