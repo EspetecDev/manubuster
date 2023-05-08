@@ -3,7 +3,8 @@ const Game = require('../models/gameModel');
 const User = require('../models/userModel');
 const axios = require('axios');
 const { set } = require('mongoose');
-const {allowedPlatforms} = require('../config/constants');
+
+
 
 // const baseURI = 'https://cors-anywhere.herokuapp.com/https://api.igdb.com/v4';
 const baseURI = 'https://api.igdb.com/v4';
@@ -18,8 +19,10 @@ const IGDB_PLATFORMS = {
     '130': 'Nintendo Switch',
     '48': 'PlayStation 4',
     '167': 'PlayStation 5',
-    '6': 'PC'
+    // '6': 'PC'
 }
+
+const allowedIGDBPlatforms = '(130, 167)';
 
 const IGDB_IMAGE_SIZE = "t_1080p"
 
@@ -28,6 +31,16 @@ function getPlatformName(platforId) {
         return IGDB_PLATFORMS[platforId]
     else 
         return ''
+}
+
+function getPlatformId(platformName){
+    returnID = -1;
+    for(const [v,k] of Object.entries(IGDB_PLATFORMS))
+        if(k === platformName){
+            returnID = v;
+            break;
+        }
+    return returnID;
 }
 
 async function GetImageByGame(gameName) {
@@ -183,10 +196,11 @@ const setGame = asyncHandler(async (req, res) => {
 
 const setIGDBGame = asyncHandler(async (req, res) => {
     // modify original method 
-    var igdbIDValue = req.body.gameId;
-    if(!igdbIDValue){
+    const igdbIDValue = req.body.gameId;
+    const platformValue = getPlatformId(req.body.platform);
+    if(!igdbIDValue || platformValue == -1){
         res.status(400);
-        throw new Error('Not valid igdbId');
+        throw new Error('Not valid igdbId or platform');
     }
 
     const owner = await User.findById(req.user.id);
@@ -200,7 +214,7 @@ const setIGDBGame = asyncHandler(async (req, res) => {
           url: `${baseURI}/games`,
           method: 'POST',
           headers: headers,
-          data: `fields name, platforms, cover ; where id = ${igdbIDValue}; limit 1;`
+          data: `fields name, platforms, cover ; where id = ${igdbIDValue} & platforms=(${platformValue}); limit 1;`
         })
         .then(response => {
             gameInfo = {
@@ -418,7 +432,7 @@ const queryIGDBGames = asyncHandler(async(req, res) => {
           url: `${baseURI}/games`,
           method: 'POST',
           headers: headers,
-          data: `fields id, name, cover, platforms; search "${query}"; limit 50;`
+          data: `fields id, name, cover, platforms; search "${query}"; where platforms=${allowedIGDBPlatforms} & category=0;limit 50;`
         })
         .then(response => {
             // let res = response.data;
@@ -439,7 +453,7 @@ const queryIGDBGames = asyncHandler(async(req, res) => {
 
     // {id: 0, name: 'game1', platform: platforms[0]},
     promises = [];
-    covers = [];
+    covers = {};
     gameList.forEach(g => { promises.push(
         axios({
             url: `${baseURI}/covers`,
@@ -451,7 +465,7 @@ const queryIGDBGames = asyncHandler(async(req, res) => {
                 let url = response.data[0].url ?? '';
                 if(url)
                     url = url.replace("t_thumb", IGDB_IMAGE_SIZE);
-                covers.push(url)
+                covers[response.data[0].id]=url;
             })
             .catch(err => {
                 console.log(err);
@@ -470,7 +484,7 @@ const queryIGDBGames = asyncHandler(async(req, res) => {
                             id: idx++,
                             name: g.name,
                             platform: getPlatformName(p),
-                            cover: covers[idx],
+                            cover: covers[g.coverId],
                             igdbId: g.igdbId
                         }
                     )
