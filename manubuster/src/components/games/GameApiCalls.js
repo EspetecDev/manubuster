@@ -51,9 +51,9 @@ export async function searchGames(inQuery) {
     return games;
 }
 
-export async function addGame(igdbId){
+export async function addGame(igdbId, platform){
     const errMsg = {msg: 'An error has ocurred', type: "error" };
-    const msg = axios(axiosSettings('post', true, {gameId: igdbId}, '/games/userGames'))
+    const msg = axios(axiosSettings('post', true, {gameId: igdbId, platform: platform}, '/games/userGames'))
     .then((req, res) =>{
         if(!req.data.msg)
             return errMsg;
