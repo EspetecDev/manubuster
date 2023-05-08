@@ -88,10 +88,6 @@ export default function SignIn() {
               id="password"
               autoComplete="current-password"
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Grid container justifyContent={'center'}>
               <Grid item>
                 <Typography  variant='caption' color='secondary' hidden={!showError}>{showError}</Typography>
