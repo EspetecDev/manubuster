@@ -12,6 +12,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
+import BookIcon from '@mui/icons-material/Book';
 import Avatar from '@mui/material/Avatar';
 import { deepOrange } from '@mui/material/colors';
 import { getSessionInfo, deleteSessionInfo } from '../helpers/helpers';
@@ -62,6 +63,9 @@ function Navbar() {
 					</Link>
 					<Link to='/myGames'>
 					<Button variant='contained' startIcon={<SmartToyIcon/>} sx={{marginLeft: "20px"}} color="warning">MY GAMES</Button>
+					</Link>
+					<Link to='/myBookings'>
+					<Button variant='contained' startIcon={<BookIcon/>} sx={{marginLeft: "20px"}} color="warning">MY BOOKINGS</Button>
 					</Link>
 					</div>
 				</Box>

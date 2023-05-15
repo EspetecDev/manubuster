@@ -132,7 +132,20 @@ const getUserGames = asyncHandler(async (req, res) => {
 
 const getReservedGames = asyncHandler(async (req, res) => {
     const reservedGames = await Game.find({lentTo: req.user.id })
-    res.status(200).json({reservedGames});
+    var returnGames = [];
+    reservedGames.forEach( g => returnGames.push(g.toJSON()));
+    for(var i=0; i<reservedGames.length; i++){
+        const owner = await User.findById(reservedGames[i].owner);
+        if(!owner){
+            res.status(500).json({reason: 'internal error'});
+        }
+        returnGames[i].owner = owner.name;
+        const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+        returnGames[i].daysLent = Math.round(Math.abs((Date.now() - returnGames[i].reservedDate) / oneDay));
+        // if(returnGames[i].reservedDate)
+        //     returnGames[i].reservedDate = returnGames[i].reservedDate.toLocaleDateString('es-ES');
+    }
+    res.status(200).json({returnGames});
 });
 
 // @desc Set game
