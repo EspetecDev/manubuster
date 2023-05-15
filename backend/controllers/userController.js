@@ -10,13 +10,17 @@ const User = require('../models/userModel');
 // @access Public
 const loginUser = asyncHandler(async (req, res) => {
     const {email, password} = req.body;
-    const user = await User.findOne({email});
-
+    
     // Check valid request data
     if( !email || !password) {
         res.status(400);
         throw new Error('email or password not correct');
     }
+    
+    var user = await User.findOne({email: email});
+    if(!user)
+        user = await User.findOne({name: email});
+
 
     // Check for email
     if(user && (await bcrypt.compare(password, user.password))){
