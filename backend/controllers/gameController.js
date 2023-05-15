@@ -86,6 +86,14 @@ const getGames = asyncHandler(async (req, res) => {
         if(!owner){
             res.status(500).json({reason: 'internal error'});
         }
+
+        if(games[i].lentTo){
+            const lentTo = await User.findById(games[i].lentTo);
+            if(lentTo){
+                returnGames[i].lentTo = lentTo.name;
+            }
+        }
+
         returnGames[i].owner = owner.name;
         if(returnGames[i].reservedDate)
             returnGames[i].reservedDate = returnGames[i].reservedDate.toLocaleDateString('es-ES');

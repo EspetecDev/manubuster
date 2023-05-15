@@ -15,6 +15,13 @@ const axiosSettings = (method, needsToken, data, serviceUrl) => {
     });
 }
 
+export async function getAllGames() {
+    const games = await axios(axiosSettings('get', true, '', '/games/'))
+    .then( (req, res) => { return req.data; })
+    .catch((e) => console.log(e));
+    return games;
+}
+
 export const deleteGame = (gameId) => {
     axios(axiosSettings('delete', true, {id: gameId}, '/games/userGames'))
     .then((req, res) =>{
