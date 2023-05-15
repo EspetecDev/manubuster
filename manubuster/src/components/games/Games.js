@@ -3,7 +3,7 @@ import GameCard from "./GameCard";
 import Grid from "@mui/material/Unstable_Grid2";
 import { Autocomplete, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
-import axios from 'axios';
+import * as GAC from './GameApiCalls';
 
 
 
@@ -11,14 +11,12 @@ const Games = () => {
     const [games, setGames] = useState([]);
     const [inputValue, setInputValue] = useState('');
 
+    async function refreshGames(){
+        setGames(await GAC.getAllGames());
+    }
+
     useEffect( () => {
-        axios.get('http://localhost:5000/api/games/')
-            .then( (res) => {
-                setGames(res.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        refreshGames();
     }, []);
 
     return (
@@ -42,7 +40,7 @@ const Games = () => {
         <div className="games">
             <Grid container spacing={5}>
             {games.filter( g => { return g.name.includes(inputValue ?? '')}).map((gameInfo, index) => (
-                <Grid item key={index} xs={8} sm={4} md={2} >
+                <Grid item key={index} xs={'auto'} md={'auto'} >
                     <GameCard gameInfo={gameInfo}></GameCard>
                 </Grid>
             ))}

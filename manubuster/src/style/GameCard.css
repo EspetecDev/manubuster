@@ -10,7 +10,7 @@ transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will g
   position: relative;
   width: 640px;
   height: 840px;
-  background: rgb(16,48,173);
+  background: rgb(211, 1, 47);
   border-radius: 20px;
   overflow: hidden;
   transform: scale(0.4);
