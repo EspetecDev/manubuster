@@ -7,6 +7,7 @@ import MyGames from './games/MyGames';
 import Signup from './userManagement/Signup';
 import Recover from './userManagement/Recover';
 import { getSessionInfo } from '../helpers/helpers';
+import MyBookings from './games/MyBookings';
 
 const ProtectedRoute = ({ children }) => {
   const session = getSessionInfo();
@@ -29,6 +30,7 @@ function App() {
             </ProtectedRoute>
           }/>
 		      <Route path='/myGames' element={<ProtectedRoute><MyGames/></ProtectedRoute>}/>
+          <Route path='/myBookings' element={<ProtectedRoute><MyBookings/></ProtectedRoute>}/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/signup' element={<Signup/>}/>
           <Route path='/recoverPassword' element={<Recover/>}/>

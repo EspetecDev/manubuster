@@ -68,8 +68,7 @@ const MyGames = () => {
             flex: 1,
             field: 'reservedDate',
             headerName: 'Reserved Date',
-            type: 'date',
-            valueGetter: ({ value }) => value && new Date(value),
+            valueGetter: ({ value }) => value && new Date(value).toLocaleDateString('es-ES'),
         },
         {
             flex: 1,

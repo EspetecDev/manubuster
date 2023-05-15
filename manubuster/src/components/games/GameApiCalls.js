@@ -43,6 +43,20 @@ export async function getUserGames() {
     return games;
 }
 
+export async function getUserBookings() {
+    const games = await axios(axiosSettings('get', true, '', '/games/reserve'))
+    .then( (req, res) => {
+        // change _id to id to support datagrid
+        if(req.data.returnGames)
+            req.data.returnGames.forEach((g) => {
+            Object.defineProperty(g, 'id', Object.getOwnPropertyDescriptor(g, '_id'));
+            delete g['_id'];
+        })
+        return req.data.returnGames;
+    }).catch((e) => console.log(e));
+    return games;
+}
+
 export async function searchGames(inQuery) {
     const games = await axios(axiosSettings('post', true, {query: inQuery}, '/games/query'))
     .then( (req, res) => {
