@@ -91,8 +91,7 @@ const MyGames = () => {
         <Stack spacing={2}>
             <Button variant='contained' onClick={() => setopenNewGameModal(true)}>Add Game</Button>
             <DataGrid
-                // autoHeight
-                sx={{height: "500px"}}
+                autoHeight
                 loading={loadingData}
                 columns={columns}
                 rows={games}>
