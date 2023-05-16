@@ -104,18 +104,18 @@ export default function SignIn() {
             
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link to="/register" >
+                <Link href="/signup" >
                   Not registered? Sign Up
                 </Link>
               </Grid>
             </Grid>
-            <Grid container justifyContent="flex-end">
+            {/* <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link to="/recoverPassword" >
                   Forgot password?
                 </Link>
               </Grid>
-            </Grid>
+            </Grid> */}
           </Box>
         </Box>
       </Container>
